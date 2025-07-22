@@ -1,0 +1,276 @@
+{# full_report_template.html #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clinical Microbial mNGS Report</title>
+  <style>
+    /* —— 全报告的样式 —— */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 14px;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 210mm;
+      /* 取消 min-height 固定，让内容自然分页 */
+      background-color: white;
+      margin: 0 auto;
+      padding: 40px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0px; /* 去掉与下一部分之间的间隙线 */
+      padding-bottom: 0px;
+    }
+    .logo {
+      width: 180px;
+      height: auto;
+      margin-right: 20px;
+    }
+    .header-text {
+      flex: 1;
+    }
+    h1 {
+      color: #1976d2;
+      font-size: 28px;
+      margin: 0;
+      font-weight: 600;
+    }
+    h2 {
+      color: #333;
+      font-size: 20px;
+      margin: 30px 0 20px 0;
+      padding-bottom: 8px;
+      /* 去掉底部边线 */
+      border-bottom: none;
+    }
+    h3 {
+      color: #555;
+      font-size: 16px;
+      margin: 25px 0 15px 0;
+      font-weight: 600;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .info-table th,
+    .info-table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .info-table th {
+      background-color: #e3f2fd;
+      font-weight: 600;
+      color: #1976d2;
+      width: 250px;       /* 将第一列宽度从 200px 调整为 250px */
+      white-space: nowrap; /* 禁止换行，保持标签文字完整 */
+    }
+    .info-table td {
+      background-color: #fafafa;
+    }
+    .info-table tr:last-child th,
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+    .threshold-info {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-left: 4px solid #1976d2;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .threshold-info strong {
+      color: #1976d2;
+    }
+    .scrollable-table {
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: auto;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0;
+    }
+    .data-table thead th {
+      background-color: #1976d2;
+      color: white;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .data-table tbody td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e0e0e0;
+      white-space: nowrap;
+    }
+    .data-table tbody tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+    .data-table tbody tr:hover {
+      background-color: #e3f2fd;
+    }
+    .percentage {
+      font-weight: 600;
+      color: #1976d2;
+    }
+    .personnel-section {
+      margin-top: 40px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    .personnel-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      font-size: 13px;
+    }
+    .personnel-item {
+      display: flex;
+      align-items: center;
+    }
+    .personnel-item strong {
+      color: #1976d2;
+      margin-right: 8px;
+      min-width: 150px; /* 为长标签名称留出更多空间 */
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #666;
+      padding: 10px 0;
+      background-color: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+    }
+    @media print {
+      body {
+        background-color: white;
+        padding: 0;
+      }
+      .container {
+        width: 190mm;
+        padding: 15mm;
+        box-shadow: none;
+        border-radius: 0;
+      }
+      .scrollable-table {
+        max-height: none;
+        overflow: visible;
+      }
+      .data-table thead th {
+        position: static;
+      }
+    }
+    @media screen and (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+      .logo {
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+      .personnel-grid {
+        grid-template-columns: 1fr;
+      }
+      .info-table th {
+        width: auto;      /* 手机屏幕时自动适应宽度 */
+        white-space: normal;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- —— Header —— -->
+    <div class="header">
+      <!-- 可替换为本地 logo.png -->
+      <img src="https://download.logo.wine/logo/University_of_Hong_Kong/University_of_Hong_Kong-Logo.wine.png"
+           alt="University of Hong Kong Logo" class="logo" />
+      <div class="header-text">
+        <h1>Clinical Microbial mNGS Report</h1>
+      </div>
+    </div>
+
+    <!-- —— Specimen Details —— -->
+    <div class="section">
+      <h2>Specimen Details</h2>
+      <table class="info-table">
+        <tr><th>Lab Number</th><td>{{ lab_number }}</td></tr>
+        <tr><th>Specimen Type</th><td>{{ specimen_type }}</td></tr>
+        <tr><th>Specimen Collection Date</th><td>{{ collection_date }}</td></tr>
+        <tr><th>Nanopore Run</th><td>{{ nanopore_run }}</td></tr>
+        <tr><th>Barcode</th><td>{{ barcode }}</td></tr>
+        <tr><th>Clinical Results</th><td>{{ clinical_results }}</td></tr>
+      </table>
+    </div>
+
+    <!-- —— Sequencing Results —— -->
+    <div class="section">
+      <h2>Sequencing Results</h2>
+      <table class="info-table">
+        <tr><th>Minimum QC Score</th><td>{{ min_qscore }}</td></tr>
+        <tr><th>Total Data</th><td>{{ total_data }}</td></tr>
+        <tr><th>Total Reads</th><td>{{ total_reads }}</td></tr>
+        <tr><th>Total Microbial Reads</th><td>{{ total_microbial_reads }}</td></tr>
+      </table>
+    </div>
+
+    <!-- —— Sliding Tables Section —— -->
+    <div class="section">
+      <h2>Analysis Reports</h2>
+      {{ sliding_tables | safe }}
+    </div>
+
+    <!-- —— Signature Section —— -->
+    <div class="personnel-section">
+      <div class="personnel-grid">
+        <div class="personnel-item"><strong>Personnel:</strong> <span>__________</span></div>
+        <div class="personnel-item"><strong>Microbiologist:</strong> <span>__________</span></div>
+        <div class="personnel-item"><strong>Laboratory:</strong> <span>__________</span></div>
+        <div class="personnel-item"><strong>Analysis:</strong> <span>__________</span></div>
+        <div class="personnel-item"><strong>Date of Experiment:</strong> <span>__________</span></div>
+        <div class="personnel-item"><strong>Date of Analysis:</strong> <span>__________</span></div>
+        <div class="personnel-item"><strong>Signature:</strong> <span>__________</span></div>
+      </div>
+    </div>
+
+    <!-- —— Footer —— -->
+    <div class="footer">
+      Report generated on {{ report_datetime }}<br/>
+      © The University of Hong Kong
+    </div>
+  </div>
+</body>
+</html>

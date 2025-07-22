@@ -1,0 +1,88 @@
+{# sliding_tables_template.html #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sliding Tables</title>
+    <style>
+        /* 整个滑动表格区域的样式 */
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h3 {
+            color: #555;
+            font-size: 16px;
+            margin: 15px 0 10px 0;
+            font-weight: 600;
+        }
+        .scrollable-table {
+            max-height: 400px;       /* 调高一点，以便显示更多行 */
+            overflow-y: auto;
+            overflow-x: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table thead th {
+            background-color: #1976d2;
+            color: white;
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .data-table tbody td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #e0e0e0;
+            white-space: nowrap;
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        .data-table tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+    </style>
+</head>
+<body>
+    {% for section in sections %}
+    <div class="section">
+        <h3>
+            {{ section.software }} Report
+            {% if section.database %}
+                (Database: {{ section.database }})
+            {% endif %}
+            {% if section.cs_score %}
+                (CS_score: {{ section.cs_score }})
+            {% endif %}
+        </h3>
+        <div class="scrollable-table">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in section.rows %}
+                    <tr>
+                        {% for col in columns %}
+                        <td>{{ row[col] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>
